@@ -1,0 +1,4 @@
+:443, :80, {{ ansible_fqdn }}:443, {{ ansible_fqdn }}:80 {
+  root /var/www/sunshinesf.org
+  gzip
+}

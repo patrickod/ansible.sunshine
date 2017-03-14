@@ -1,0 +1,6 @@
+---
+ - hosts: sunshine
+   remote_user: root
+   roles:
+     - { role: caddy }
+     - { role: sunshine }

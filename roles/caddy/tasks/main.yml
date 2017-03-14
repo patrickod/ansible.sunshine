@@ -1,0 +1,72 @@
+---
+ - name: install caddy
+   copy:
+     src: caddy
+     dest: /usr/local/bin/caddy
+     owner: root
+     group: root
+     mode: 0755
+   tags:
+     - caddy
+
+ - name: set caddy binary privileges
+   capabilities:
+     path: /usr/local/bin/caddy
+     capability: cap_net_bind_service=+ep
+     state: present
+   tags:
+     - caddy
+
+ - name: add www-data group
+   group: name=www-data state=present
+   tags:
+     - caddy
+
+ - name: add www-data user
+   user:
+     name: www-data
+     shell: /usr/sbin/nologin
+     system: yes
+     home: /var/www
+     createhome: yes
+     group: www-data
+   tags:
+     - caddy
+
+ - name: make caddy directories
+   with_items:
+     - /etc/ssl/caddy
+     - /etc/caddy
+   file:
+     dest: "{{ item }}"
+     state: directory
+     owner: www-data
+     group: www-data
+   tags:
+     - caddy
+
+ - name: install Caddyfile
+   template:
+     src: Caddyfile
+     dest: /etc/caddy/Caddyfile
+     owner: www-data
+     group: www-data
+   tags:
+     - caddy
+
+ - name: install caddy systemd unit file
+   copy:
+     src: caddy.service
+     dest: /etc/systemd/system/caddy.service
+     owner: root
+     group: root
+   tags:
+     - caddy
+
+ - name: start caddy service
+   systemd:
+     name: caddy
+     daemon_reload: yes
+     state: started
+   tags:
+     - caddy

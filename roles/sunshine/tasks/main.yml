@@ -1,0 +1,67 @@
+---
+ - name: make sunshinesf web directory
+   file:
+     state: directory
+     dest: /var/www/sunshinesf.org
+     owner: www-data
+     group: www-data
+   tags:
+     - sunshine
+
+ - name: add sunshine group
+   group: name=sunshine state=present
+   tags:
+     - sunshine
+
+ - name: add sunshine user
+   user:
+     name: sunshine
+     shell: /bin/false
+     system: yes
+     home: /srv/sunshine
+     createhome: yes
+     group: sunshine
+   tags:
+     - sunshine
+
+ - name: deploy py-env installer
+   copy:
+     src: pyenv-installer.sh
+     dest: /srv/sunshine/pyenv-installer.sh
+     mode: 777
+     owner: sunshine
+     group: sunshine
+   tags:
+     - sunshine
+
+ - name: install git & build-essential
+   with_items:
+     - git
+     - build-essential
+   apt:
+     package: "{{ item }}"
+     state: latest
+     update_cache: yes
+     cache_valid_time: 3600
+   tags:
+     - sunshine
+
+ - name: install pyenv for sunshine
+   shell: /srv/sunshine/pyenv-installer.sh 
+   args:
+     chdir: /srv/sunshine
+     creates: /srv/sunshine/.pyenv
+   tags:
+     - sunshine
+
+ - name: edit .profile
+   blockinfile:
+     dest: /srv/sunshine/.profile
+     owner: sunshine
+     group: sunshine
+     block: |
+       export PATH="/srv/sunshine/.pyenv/bin:$PATH"
+       eval "$(pyenv init -)"
+       eval "$(pyenv virtualenv-init -)"
+   tags:
+     - sunshine
