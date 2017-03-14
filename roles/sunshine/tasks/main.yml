@@ -36,8 +36,13 @@
 
  - name: install git & build-essential
    with_items:
-     - git
      - build-essential
+     - git
+     - libbz2-dev
+     - libreadline-dev
+     - libsqlite3-dev
+     - libssl-dev
+     - zlib1g-dev
    apt:
      package: "{{ item }}"
      state: latest
@@ -47,7 +52,7 @@
      - sunshine
 
  - name: install pyenv for sunshine
-   shell: /srv/sunshine/pyenv-installer.sh 
+   shell: /srv/sunshine/pyenv-installer.sh
    args:
      chdir: /srv/sunshine
      creates: /srv/sunshine/.pyenv
@@ -63,5 +68,13 @@
        export PATH="/srv/sunshine/.pyenv/bin:$PATH"
        eval "$(pyenv init -)"
        eval "$(pyenv virtualenv-init -)"
+   tags:
+     - sunshine
+
+ - name: install python
+   shell: su -l -c "pyenv install 3.6.0" -s "/bin/bash" sunshine
+   args:
+     chdir: /srv/sunshine
+     creates: /srv/sunshine/.pyenv/versions/3.6.0/bin/python
    tags:
      - sunshine
