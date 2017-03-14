@@ -53,6 +53,8 @@
      group: www-data
    tags:
      - caddy
+   notify:
+     - restart caddy
 
  - name: install caddy systemd unit file
    copy:
