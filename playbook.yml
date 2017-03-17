@@ -2,5 +2,6 @@
  - hosts: sunshine
    remote_user: root
    roles:
+     - { role: common }
      - { role: caddy }
      - { role: sunshine }

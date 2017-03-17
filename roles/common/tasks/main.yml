@@ -1,0 +1,15 @@
+---
+ - name: install fail2ban
+   apt: package=fail2ban state=latest update_cache=yes cache_valid_time=3600
+   tags:
+     - common
+
+ - name: install SSH keys
+   with_items:
+     - patrickod
+   authorized_key:
+     user: root
+     state: present
+     key: "{{ lookup('file', item) }}"
+   tags:
+     - common
