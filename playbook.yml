@@ -4,4 +4,4 @@
    roles:
      - { role: common }
      - { role: caddy }
-     - { role: sunshine }
+     - { role: sunshine, python_version: 3.6.0 }

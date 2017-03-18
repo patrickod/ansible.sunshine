@@ -72,9 +72,64 @@
      - sunshine
 
  - name: install python
-   shell: su -l -c "pyenv install 3.6.0" -s "/bin/bash" sunshine
+   shell: su -l -c "pyenv install {{ python_version }}" -s "/bin/bash" sunshine
    args:
      chdir: /srv/sunshine
      creates: /srv/sunshine/.pyenv/versions/3.6.0/bin/python
+   tags:
+     - sunshine
+
+ - name: clone sunshinesf repository
+   become_user: sunshine
+   git:
+     repo: https://github.com/cowlicks/sunshine.git
+     dest: /srv/sunshine/sunshine
+     version: master
+   tags:
+     - sunshine
+
+ - name: determine master HEAD
+   shell: git rev-parse HEAD
+   args:
+     chdir: /srv/sunshine/sunshine
+   register: sunshine_head
+   become_user: sunshine
+   tags:
+     - sunshine
+
+ - name: make release directory
+   file:
+     state: directory
+     dest: "/srv/sunshine/www/sunshine-{{ sunshine_head.stdout }}"
+     owner: sunshine
+     group: sunshine
+   tags:
+     - sunshine
+
+ - name: deploy archive with content at HEAD
+   shell: "git archive {{ sunshine_head.stdout }} | tar -x -C /srv/sunshine/www/sunshine-{{ sunshine_head.stdout }}"
+   args:
+     chdir: /srv/sunshine/sunshine
+   become_user: sunshine
+   tags:
+     - sunshine
+
+ - name: set sunshine python version
+   file:
+     dest: "/srv/sunshine/www/sunshine-{{ sunshine_head.stdout }}"
+     content: "{{ python_version }}"
+     owner: sunshine
+     group: sunshine
+   tags:
+     - sunshine
+
+ - name: make symlink for latest release
+   file:
+     state: link
+     src: "/srv/sunshine/www/sunshine-{{ sunshine_head.stdout }}"
+     dest: /srv/sunshine/www/sunshine-latest
+     owner: sunshine
+     group: sunshine
+     force: true
    tags:
      - sunshine
