@@ -59,11 +59,12 @@
    tags:
      - sunshine
 
- - name: edit .profile
+ - name: edit .bash_profile
    blockinfile:
-     dest: /srv/sunshine/.profile
+     dest: /srv/sunshine/.bash_profile
      owner: sunshine
      group: sunshine
+     create: yes
      block: |
        export PATH="/srv/sunshine/.pyenv/bin:$PATH"
        eval "$(pyenv init -)"
@@ -110,6 +111,7 @@
    shell: "git archive {{ sunshine_head.stdout }} | tar -x -C /srv/sunshine/www/sunshine-{{ sunshine_head.stdout }}"
    args:
      chdir: /srv/sunshine/sunshine
+     creates: "/srv/sunshine/www/sunshine-{{ sunshine_head.stdout }}/requirements.txt"
    become_user: sunshine
    tags:
      - sunshine
@@ -123,6 +125,15 @@
    tags:
      - sunshine
 
+ - name: install python dependencies
+   shell: /srv/sunshine/.pyenv/shims/pip install -r requirements.txt
+   args:
+     chdir: "/srv/sunshine/www/sunshine-{{ sunshine_head.stdout }}"
+   become_user: sunshine
+   register: sunshine_path
+   tags:
+     - sunshine
+
  - name: make symlink for latest release
    file:
      state: link
@@ -133,3 +144,21 @@
      force: true
    tags:
      - sunshine
+
+ - name: install gunicorn systemd file
+   copy:
+     src: sunshine.service
+     dest: /etc/systemd/system/sunshine.service
+     owner: root
+     group: root
+   tags:
+     - sunshine
+
+ - name: start sunshine service
+   systemd:
+     name: sunshine
+     daemon_reload: yes
+     state: started
+   tags:
+     - sunshine
+  

@@ -1,0 +1,10 @@
+[Unit]
+Description=SunshineSF
+
+[Service]
+ExecStart=/srv/sunshine/.pyenv/shims/gunicorn sunshine:app
+User=sunshine
+WorkingDirectory=/srv/sunshine/www/sunshine-latest
+
+[Install]
+WantedBy=multi-user.target
