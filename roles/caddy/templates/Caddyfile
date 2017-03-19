@@ -1,5 +1,12 @@
-https://{{ ansible_fqdn }}, http://{{ ansible_fqdn }} {
-  root /var/www/sunshinesf.org
+https://{{ ansible_nodename }}, http://{{ ansible_nodename }} {
   gzip
+
+  proxy / 127.0.0.1:5000 {
+    header_upstream Host {host}
+    header_upstream X-Forwarded-Proto {scheme}
+    except /static
+  }
+
+  root /srv/sunshine/www/sunshine-latest/sunshine
 }
 
