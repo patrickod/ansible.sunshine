@@ -20,5 +20,6 @@ www.sunshinesf.org, sunshinesf.org, eniac.sunshinesf.org {
   }
 
   root /srv/sunshine/www/sunshine-latest/sunshine
-}
 
+  prometheus
+}
