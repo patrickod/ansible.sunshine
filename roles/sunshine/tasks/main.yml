@@ -151,6 +151,7 @@
      dest: /etc/systemd/system/sunshine.service
      owner: root
      group: root
+     enabled: yes
    tags:
      - sunshine
 
@@ -159,6 +160,7 @@
      name: sunshine
      daemon_reload: yes
      state: started
+     enabled: yes
    tags:
      - sunshine
   
