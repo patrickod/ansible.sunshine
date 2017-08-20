@@ -151,7 +151,6 @@
      dest: /etc/systemd/system/sunshine.service
      owner: root
      group: root
-     enabled: yes
    tags:
      - sunshine
 
